@@ -1,5 +1,6 @@
 clc;clear;close all;
 addpath(genpath('C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\Elektrotekniologi - Master\2. semester\34746 Robust and fault-tolerant control\L01\SA Tool\SaTool_3_0100\sa_tool_3_0100')) % add path to sa_tools
+addpath(fileparts(mfilename('fullpath'))) % add this script's own directory (for GLR_design, etc.)
 
 % Inputs
 syms u1(t) u2(t)
@@ -90,8 +91,10 @@ ST_sys=sa_match(ST_sys,'rank');
 sa_disp(ST_sys)
 
 
-sa_report(ST_sys,'assignment1','pdf','analytic_expressions',true);
-winopen('assignment1.pdf');
+SA_document_name = 'SA Analysis'
+sa_report(ST_sys,SA_document_name,'pdf','analytic_expressions',true);
+winopen(SA_document_name+'.pdf');
+
 
 
 sa_disp(ST_sys,'t');  % matching
@@ -112,6 +115,7 @@ sa_disp(ST_sys,'a');  % analytic parity
 %% Q2
 
 clear variables; clc; close all;
+addpath(fileparts(mfilename('fullpath'))) % add this script's own directory (for GLR_design, etc.)
 
 syms u1 u2 y1 y2 y3
 syms J1 J2 J3 k1 k2 b1 b2 b3 s
@@ -184,7 +188,7 @@ Gd_r2_y3 = Gd_mimo(2,5);
 
 % Q3
 
-data = load('ECP502Data.mat');
+data = load('C:\Users\liou-\OneDrive - Danmarks Tekniske Universitet\Elektrotekniologi - Master\2. semester\34746 Robust and fault-tolerant control\34746_Robust_and_fault-tolerant_control\Assignment\Assignment_1\ECP502Data.mat');
 % imported are
 % t u1 u2 y_meas
 
@@ -322,14 +326,19 @@ end
 V_ry = F(:,3:5);
 H_rf = V_ry * H_yf;
 
-% Q5 
+%% Q5 
+
+addpath(fileparts(mfilename('fullpath'))) % add this script's own directory (for GLR_design, etc.)
 
 
 sig_1 = 0.0093;
 sig_2 = sig_1;
-% sig_3 = sig_2;
+sig_3 = sig_2;
 
 sig_matrix = diag([sig_1, sig_2]);
+
+var = ( (norm(Gd_r2_y2,2)*sig_2)^2 + (norm(Gd_r2_y3,2)*sig_3)^2 ) / 2;
+sigma = sqrt(var);
 
 % parameter
 J1 = 0.0025;
@@ -387,15 +396,15 @@ h = chi2inv(1-P_F,1)/2;
 M = 1;
 PD = 0;
 
-while PD < PD_req
-    lambda = M * mu_delta^2 / Qy^2;
+while PD < P_D_req
+    lambda = M * mu_delta^2 / sigma^2;
     PD = 1 - ncx2cdf(2*h, 1, lambda);
     M = M + 1;
 end
 
 M = M - 1;
 
-lambda = (M* mu_delta^2) / Qy^2;
+lambda = (M* mu_delta^2) / sigma^2;
 P_D = 1 - ncx2cdf(2*h,1,lambda);
 
-GLR_design(M,h,mu_1,mu_0,sig_2)
+GLR_design(M,h,mu_1,mu_0,sigma);

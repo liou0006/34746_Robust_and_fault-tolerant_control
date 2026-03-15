@@ -4,18 +4,11 @@ function GLR_design(M,h,mu_1,mu_0,sigma)
 % DFTC 3rd ed. 2015, pp 291 - 293
 %
 % Let M be window size
-if(nargin <1)
-    M = 50;
-end
-if(nargin < 2)
-    mu_1 = 0.5;
-end
-if(nargin < 3)
-    mu_0 = 0.0;
-end
-if(nargin <4)
-    sigma = 1.0;
-end
+if nargin < 1,  M     = 50;  end
+if nargin < 2,  h     = 7.5; end   % add a sensible default for h
+if nargin < 3,  mu_1  = 0.5;  end
+if nargin < 4,  mu_0  = 0.0;  end
+if nargin < 5,  sigma = 1.0;  end
 % lambda is the non-centrality parameter in the non central 
 % Chi square distribution, see (7.39).
 % The GLRT has the test statistic given by (7.35)
